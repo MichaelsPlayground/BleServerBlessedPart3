@@ -1,4 +1,4 @@
-package de.androidcrypto.bleserverblessedoriginal;
+package de.androidcrypto.bleserverblessedpart2;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;

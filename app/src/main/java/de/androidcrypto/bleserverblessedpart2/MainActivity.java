@@ -1,4 +1,4 @@
-package de.androidcrypto.bleserverblessedoriginal;
+package de.androidcrypto.bleserverblessedpart2;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
