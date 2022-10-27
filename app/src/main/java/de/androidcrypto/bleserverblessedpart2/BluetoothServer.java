@@ -9,6 +9,7 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.ParcelUuid;
 
@@ -36,7 +37,13 @@ class BluetoothServer {
     private BluetoothPeripheralManager peripheralManager;
     private final HashMap<BluetoothGattService, Service> serviceImplementations = new HashMap<>();
 
+    private static Context mContext; // new in part 2
+    // Intent constants // new in part 2
+    public static final String BLUETOOTH_HANDLER_ADVERTISER = "androidcrypto.bluetoothhandler.advertiser";
+    public static final String BLUETOOTH_HANDLER_ADVERTISER_EXTRA = "androidcrypto.bluetoothhandler.advertiser.extra";
+
     public static synchronized BluetoothServer getInstance(Context context) {
+        mContext = context; // new in part 2
         if (instance == null) {
             instance = new BluetoothServer(context.getApplicationContext());
         }
@@ -139,17 +146,27 @@ class BluetoothServer {
 
         @Override
         public void onAdvertisingStarted(@NotNull AdvertiseSettings settingsInEffect) {
-
+            System.out.println("*** onAdvertisingStarted ***");
+            // new in part 2
+            Intent intent = new Intent(BLUETOOTH_HANDLER_ADVERTISER);
+            intent.putExtra(BLUETOOTH_HANDLER_ADVERTISER_EXTRA, "ON");
+            sendToMain(intent);
         }
 
         @Override
         public void onAdvertiseFailure(@NotNull AdvertiseError advertiseError) {
-
+            // new in part 2
+            Intent intent = new Intent(BLUETOOTH_HANDLER_ADVERTISER);
+            intent.putExtra(BLUETOOTH_HANDLER_ADVERTISER_EXTRA, "OFF");
+            sendToMain(intent);
         }
 
         @Override
         public void onAdvertisingStopped() {
-
+            // new in part 2
+            Intent intent = new Intent(BLUETOOTH_HANDLER_ADVERTISER);
+            intent.putExtra(BLUETOOTH_HANDLER_ADVERTISER_EXTRA, "OFF");
+            sendToMain(intent);
         }
     };
 
@@ -210,4 +227,13 @@ class BluetoothServer {
         setupServices();
         startAdvertising(heartRateService.getService().getUuid());
     }
+
+    /**
+     * section for broadcast
+     */
+    // new in part 2
+    private void sendToMain(@NotNull Intent intent) {
+        mContext.sendBroadcast(intent);
+    }
 }
+

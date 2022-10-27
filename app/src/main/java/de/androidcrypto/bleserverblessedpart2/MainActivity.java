@@ -7,9 +7,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
@@ -41,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // new in part 2
+        registerReceiver(advertiserStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_HANDLER_ADVERTISER)));
+
         bluetoothEnabled = findViewById(R.id.swMainBleEnabled);
         advertisingActive = findViewById(R.id.swMainAdvertisingActive);
         deviceConnected = findViewById(R.id.swMainDeviceConnected);
@@ -59,6 +64,13 @@ public class MainActivity extends AppCompatActivity {
             bluetoothEnabled.setChecked(true); // added in part 2
             checkPermissions();
         }
+    }
+
+    // new in part 2
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(advertiserStateReceiver);
     }
 
     private boolean isBluetoothEnabled() {
@@ -185,4 +197,23 @@ public class MainActivity extends AppCompatActivity {
     {
         BluetoothServer.getInstance(getApplicationContext());
     }
+
+    /**
+     * section for broadcast
+     */
+
+    // new in part 2
+    private final BroadcastReceiver advertiserStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String advertiserStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_HANDLER_ADVERTISER_EXTRA);
+            if (advertiserStatus == null) return;
+            if (advertiserStatus.equals("ON")) {
+                advertisingActive.setChecked(true);
+            } else {
+                advertisingActive.setChecked(false);
+            }
+        }
+    };
+
 }

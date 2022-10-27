@@ -7,7 +7,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "de.androidcrypto.bleserverblessedopart2"
+        applicationId "de.androidcrypto.bleserverblessedpart2"
         minSdk 21
         targetSdk 33
         versionCode 1
