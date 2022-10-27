@@ -1,6 +1,6 @@
 # Changes to part 1 of the server
 
-1) added 3 switches to the activity_main.xml
+1) added 3 switches and a (Material) EditText to the activity_main.xml
 
 ```plaintext
     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -38,9 +38,38 @@
         android:clickable="false"
         android:text="Device is connected"
         android:textSize="18sp" />
+        
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/etMainConnectionLogDecoration"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:hint="connection log"
+        android:visibility="visible"
+        app:boxCornerRadiusBottomEnd="5dp"
+        app:boxCornerRadiusBottomStart="5dp"
+        app:boxCornerRadiusTopEnd="5dp"
+        app:boxCornerRadiusTopStart="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etMainConnectionLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:focusable="false"
+            android:text=""
+            android:textSize="14sp"
+            android:visibility="visible"
+            tools:ignore="KeyboardInaccessibleWidget" />
+    </com.google.android.material.textfield.TextInputLayout>        
 ```
 
-2) added switches to MainActivity.java
+2) added switches and EditTextto MainActivity.java
 
 for switch BluetoothEnabled:
 
@@ -67,8 +96,8 @@ for switch AdvertisingActive:
 
 ```plaintext
     // Intent constants
-    public static final String BLUETOOTH_HANDLER_ADVERTISER = "androidcrypto.bluetoothhandler.advertiser";
-    public static final String BLUETOOTH_HANDLER_ADVERTISER_EXTRA = "androidcrypto.bluetoothhandler.advertiser.extra";
+    public static final String BLUETOOTH_SERVER_ADVERTISER = "androidcrypto.bluetoothserver.advertiser";
+    public static final String BLUETOOTH_SERVER_ADVERTISER_EXTRA = "androidcrypto.bluetoothserver.advertiser.extra";
 ```
 
 in BluetoothServer.java in BluetoothPeripheralManagerCallback add a Broadcast-Intent with 
@@ -77,22 +106,22 @@ values ON or OFF:
 ```plaintext
         @Override
         public void onAdvertisingStarted(@NotNull AdvertiseSettings settingsInEffect) {
-            Intent intent = new Intent(BLUETOOTH_HANDLER_ADVERTISER);
-            intent.putExtra(BLUETOOTH_HANDLER_ADVERTISER_EXTRA, "ON");
+            Intent intent = new Intent(BLUETOOTH_SERVERADVERTISER);
+            intent.putExtra(BLUETOOTH_SERVER_ADVERTISER_EXTRA, "ON");
             sendToMain(intent);
         }
 
         @Override
         public void onAdvertiseFailure(@NotNull AdvertiseError advertiseError) {
-            Intent intent = new Intent(BLUETOOTH_HANDLER_ADVERTISER);
-            intent.putExtra(BLUETOOTH_HANDLER_ADVERTISER_EXTRA, "OFF");
+            Intent intent = new Intent(BLUETOOTH_SERVERADVERTISER);
+            intent.putExtra(BLUETOOTH_SERVER_ADVERTISER_EXTRA, "OFF");
             sendToMain(intent);
         }
 
         @Override
         public void onAdvertisingStopped() {
-            Intent intent = new Intent(BLUETOOTH_HANDLER_ADVERTISER);
-            intent.putExtra(BLUETOOTH_HANDLER_ADVERTISER_EXTRA, "OFF");
+            Intent intent = new Intent(BLUETOOTH_SERVER_ADVERTISER);
+            intent.putExtra(BLUETOOTH_SERVER_ADVERTISER_EXTRA, "OFF");
             sendToMain(intent);
         }
 ```
@@ -139,7 +168,7 @@ in MainActivity.java add a BroadcastReceiver:
     private final BroadcastReceiver advertiserStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String advertiserStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_HANDLER_ADVERTISER_EXTRA);
+            String advertiserStatus = intent.getStringExtra(BluetoothServer.SERVER_ADVERTISER_EXTRA);
             if (advertiserStatus == null) return;
             if (advertiserStatus.equals("ON")) {
                 advertisingActive.setChecked(true);
@@ -150,11 +179,11 @@ in MainActivity.java add a BroadcastReceiver:
     };
 ```
 
-acompanied with a register on startup and unregister on destroy of the app:
+accompanied with a register on startup and unregister on destroy of the app:
 
 ```plaintext
 onCreate:
-  registerReceiver(advertiserStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_HANDLER_ADVERTISER)));
+  registerReceiver(advertiserStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_SERVER_ADVERTISER)));
 
     @Override
     protected void onDestroy() {
@@ -164,3 +193,105 @@ onCreate:
 
 ```
 
+6) now add the functionality for the DeviceConnected switch
+
+in BluetoothServer.java add new constants
+
+```plaintext
+    public static final String BLUETOOTH_SERVER_CONNECTION = "androidcrypto.bluetoothserver.connection";
+    public static final String BLUETOOTH_SERVER_CONNECTION_EXTRA = "androidcrypto.bluetoothserver.connection.extra";
+```
+
+in BluetoothServer.java in BluetoothPeripheralManagerCallback add a Broadcast-Intent with
+values ON or OFF:
+
+```plaintext
+        @Override
+        public void onCentralConnected(@NotNull BluetoothCentral central) {
+            for (Service serviceImplementation : serviceImplementations.values()) {
+                serviceImplementation.onCentralConnected(central);
+            }
+            Intent intent = new Intent(BLUETOOTH_SERVER_CONNECTION);
+            intent.putExtra(BLUETOOTH_SERVER_CONNECTION_EXTRA, "connected to MAC: " + central.getAddress());
+            sendToMain(intent);
+        }
+
+        @Override
+        public void onCentralDisconnected(@NotNull BluetoothCentral central) {
+            for (Service serviceImplementation : serviceImplementations.values()) {
+                serviceImplementation.onCentralDisconnected(central);
+            }
+            Intent intent = new Intent(BLUETOOTH_SERVER_CONNECTION);
+            intent.putExtra(BLUETOOTH_SERVER_CONNECTION_EXTRA, "DISCONNECTED from MAC: " + central.getAddress());
+            sendToMain(intent);
+        }
+```
+
+in MainActivity.java add a BroadcastReceiver:
+
+```plaintext
+    private final BroadcastReceiver connectionStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String connectionStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_SERVER_CONNECTION_EXTRA);
+            if (connectionStatus == null) return;
+            if (connectionStatus.contains("connected")) {
+                deviceConnected.setChecked(true);
+            } else {
+                deviceConnected.setChecked(false);
+            }
+            //String newConnectionLog = connectionStatus + "\n" + connectionLog.getText().toString();
+            //connectionLog.setText(newConnectionLog);
+        }
+    };
+```
+
+accompanied with a BroadcastReceiver register or unregister:
+
+```plaintext
+        registerReceiver(connectionStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_SERVER_CONNECTION)));
+        
+        unregisterReceiver(connectionStateReceiver);
+```
+
+7) now we are adding a connection logfile 
+
+in MainActivity.java BroadcastReceiver connectionStateReceiver comment out the last two lines:
+
+```plaintext
+    private final BroadcastReceiver connectionStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String connectionStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_SERVER_CONNECTION_EXTRA);
+            if (connectionStatus == null) return;
+            if (connectionStatus.contains("connected")) {
+                deviceConnected.setChecked(true);
+            } else {
+                deviceConnected.setChecked(false);
+            }
+            String newConnectionLog = connectionStatus + "\n" + connectionLog.getText().toString();
+            connectionLog.setText(newConnectionLog);
+        }
+    };
+```
+
+
+```plaintext
+
+```
+
+
+```plaintext
+
+```
+
+
+
+```plaintext
+
+```
+
+
+```plaintext
+
+```

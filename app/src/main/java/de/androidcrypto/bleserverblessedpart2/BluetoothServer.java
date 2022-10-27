@@ -39,8 +39,10 @@ class BluetoothServer {
 
     private static Context mContext; // new in part 2
     // Intent constants // new in part 2
-    public static final String BLUETOOTH_HANDLER_ADVERTISER = "androidcrypto.bluetoothhandler.advertiser";
-    public static final String BLUETOOTH_HANDLER_ADVERTISER_EXTRA = "androidcrypto.bluetoothhandler.advertiser.extra";
+    public static final String BLUETOOTH_SERVER_ADVERTISER = "androidcrypto.bluetoothserver.advertiser";
+    public static final String BLUETOOTH_SERVER_ADVERTISER_EXTRA = "androidcrypto.bluetoothserver.advertiser.extra";
+    public static final String BLUETOOTH_SERVER_CONNECTION = "androidcrypto.bluetoothserver.connection";
+    public static final String BLUETOOTH_SERVER_CONNECTION_EXTRA = "androidcrypto.bluetoothserver.connection.extra";
 
     public static synchronized BluetoothServer getInstance(Context context) {
         mContext = context; // new in part 2
@@ -135,6 +137,10 @@ class BluetoothServer {
             for (Service serviceImplementation : serviceImplementations.values()) {
                 serviceImplementation.onCentralConnected(central);
             }
+            // new in part 2
+            Intent intent = new Intent(BLUETOOTH_SERVER_CONNECTION);
+            intent.putExtra(BLUETOOTH_SERVER_CONNECTION_EXTRA, "connected to MAC: " + central.getAddress());
+            sendToMain(intent);
         }
 
         @Override
@@ -142,30 +148,34 @@ class BluetoothServer {
             for (Service serviceImplementation : serviceImplementations.values()) {
                 serviceImplementation.onCentralDisconnected(central);
             }
+            // new in part 2
+            Intent intent = new Intent(BLUETOOTH_SERVER_CONNECTION);
+            intent.putExtra(BLUETOOTH_SERVER_CONNECTION_EXTRA, "DISCONNECTED from MAC: " + central.getAddress());
+            sendToMain(intent);
         }
 
         @Override
         public void onAdvertisingStarted(@NotNull AdvertiseSettings settingsInEffect) {
             System.out.println("*** onAdvertisingStarted ***");
             // new in part 2
-            Intent intent = new Intent(BLUETOOTH_HANDLER_ADVERTISER);
-            intent.putExtra(BLUETOOTH_HANDLER_ADVERTISER_EXTRA, "ON");
+            Intent intent = new Intent(BLUETOOTH_SERVER_ADVERTISER);
+            intent.putExtra(BLUETOOTH_SERVER_ADVERTISER_EXTRA, "ON");
             sendToMain(intent);
         }
 
         @Override
         public void onAdvertiseFailure(@NotNull AdvertiseError advertiseError) {
             // new in part 2
-            Intent intent = new Intent(BLUETOOTH_HANDLER_ADVERTISER);
-            intent.putExtra(BLUETOOTH_HANDLER_ADVERTISER_EXTRA, "OFF");
+            Intent intent = new Intent(BLUETOOTH_SERVER_ADVERTISER);
+            intent.putExtra(BLUETOOTH_SERVER_ADVERTISER_EXTRA, "OFF");
             sendToMain(intent);
         }
 
         @Override
         public void onAdvertisingStopped() {
             // new in part 2
-            Intent intent = new Intent(BLUETOOTH_HANDLER_ADVERTISER);
-            intent.putExtra(BLUETOOTH_HANDLER_ADVERTISER_EXTRA, "OFF");
+            Intent intent = new Intent(BLUETOOTH_SERVER_ADVERTISER);
+            intent.putExtra(BLUETOOTH_SERVER_ADVERTISER_EXTRA, "OFF");
             sendToMain(intent);
         }
     };

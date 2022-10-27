@@ -32,8 +32,10 @@ import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
 
+    // new in part 2
     /* Local UI */
     SwitchMaterial bluetoothEnabled, advertisingActive, deviceConnected;
+    com.google.android.material.textfield.TextInputEditText connectionLog;
 
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int ACCESS_LOCATION_REQUEST = 2;
@@ -44,11 +46,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // new in part 2
-        registerReceiver(advertiserStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_HANDLER_ADVERTISER)));
+        registerReceiver(advertiserStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_SERVER_ADVERTISER)));
+        registerReceiver(connectionStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_SERVER_CONNECTION)));
 
+        // new in part 2
         bluetoothEnabled = findViewById(R.id.swMainBleEnabled);
         advertisingActive = findViewById(R.id.swMainAdvertisingActive);
         deviceConnected = findViewById(R.id.swMainDeviceConnected);
+        connectionLog = findViewById(R.id.etMainConnectionLog);
     }
 
     @SuppressLint("MissingPermission")
@@ -71,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(advertiserStateReceiver);
+        unregisterReceiver(connectionStateReceiver);
     }
 
     private boolean isBluetoothEnabled() {
@@ -206,13 +212,29 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver advertiserStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String advertiserStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_HANDLER_ADVERTISER_EXTRA);
+            String advertiserStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_SERVER_ADVERTISER_EXTRA);
             if (advertiserStatus == null) return;
             if (advertiserStatus.equals("ON")) {
                 advertisingActive.setChecked(true);
             } else {
                 advertisingActive.setChecked(false);
             }
+        }
+    };
+
+    // new in part 2
+    private final BroadcastReceiver connectionStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String connectionStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_SERVER_CONNECTION_EXTRA);
+            if (connectionStatus == null) return;
+            if (connectionStatus.contains("connected")) {
+                deviceConnected.setChecked(true);
+            } else {
+                deviceConnected.setChecked(false);
+            }
+            String newConnectionLog = connectionStatus + "\n" + connectionLog.getText().toString();
+            connectionLog.setText(newConnectionLog);
         }
     };
 
