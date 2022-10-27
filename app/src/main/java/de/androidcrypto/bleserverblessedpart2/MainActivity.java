@@ -15,6 +15,8 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,9 @@ import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
 
+    /* Local UI */
+    SwitchMaterial bluetoothEnabled, advertisingActive, deviceConnected;
+
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int ACCESS_LOCATION_REQUEST = 2;
 
@@ -35,6 +40,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        bluetoothEnabled = findViewById(R.id.swMainBleEnabled);
+        advertisingActive = findViewById(R.id.swMainAdvertisingActive);
+        deviceConnected = findViewById(R.id.swMainDeviceConnected);
     }
 
     @SuppressLint("MissingPermission")
@@ -43,9 +52,11 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         if (!isBluetoothEnabled()) {
+            bluetoothEnabled.setChecked(false); // added in part 2
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         } else {
+            bluetoothEnabled.setChecked(true); // added in part 2
             checkPermissions();
         }
     }
