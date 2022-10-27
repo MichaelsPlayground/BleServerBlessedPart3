@@ -256,7 +256,8 @@ accompanied with a BroadcastReceiver register or unregister:
 
 7) now we are adding a connection logfile 
 
-in MainActivity.java BroadcastReceiver connectionStateReceiver comment out the last two lines:
+in MainActivity.java BroadcastReceiver connectionStateReceiver remove the comment out 
+on the last two lines:
 
 ```plaintext
     private final BroadcastReceiver connectionStateReceiver = new BroadcastReceiver() {
@@ -275,23 +276,5 @@ in MainActivity.java BroadcastReceiver connectionStateReceiver comment out the l
     };
 ```
 
-
-```plaintext
-
-```
-
-
-```plaintext
-
-```
-
-
-
-```plaintext
-
-```
-
-
-```plaintext
-
-```
+Now the MainActivity is showing the BluetoothEnabled, AdvertisingActive and DeviceConnect status and 
+provides a logfile on the last connected and disconnected devices.
