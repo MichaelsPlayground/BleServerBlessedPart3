@@ -342,3 +342,5 @@ on the last two lines:
 
 Now the MainActivity is showing the BluetoothEnabled, AdvertisingActive, DeviceConnect and SubscriptionsEnabled status and 
 provides a logfile on the last connected and disconnected devices and subscriptions.
+
+For a Battery Level Service see BluetoothLowEnergyInAndroidJavaPeripheral.
