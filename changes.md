@@ -340,5 +340,5 @@ on the last two lines:
         }
 ```
 
-Now the MainActivity is showing the BluetoothEnabled, AdvertisingActive and DeviceConnect status and 
-provides a logfile on the last connected and disconnected devices.
+Now the MainActivity is showing the BluetoothEnabled, AdvertisingActive, DeviceConnect and SubscriptionsEnabled status and 
+provides a logfile on the last connected and disconnected devices and subscriptions.
