@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     // new in part 2
     /* Local UI */
-    SwitchMaterial bluetoothEnabled, advertisingActive, deviceConnected;
+    SwitchMaterial bluetoothEnabled, advertisingActive, deviceConnected, subscriptionsEnabled;
     com.google.android.material.textfield.TextInputEditText connectionLog;
 
     private static final int REQUEST_ENABLE_BT = 1;
@@ -48,11 +48,13 @@ public class MainActivity extends AppCompatActivity {
         // new in part 2
         registerReceiver(advertiserStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_SERVER_ADVERTISER)));
         registerReceiver(connectionStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_SERVER_CONNECTION)));
+        registerReceiver(subscriptionStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_SERVER_SUBSCRIPTION)));
 
         // new in part 2
         bluetoothEnabled = findViewById(R.id.swMainBleEnabled);
         advertisingActive = findViewById(R.id.swMainAdvertisingActive);
         deviceConnected = findViewById(R.id.swMainDeviceConnected);
+        subscriptionsEnabled = findViewById(R.id.swMainSubscriptionsEnabled);
         connectionLog = findViewById(R.id.etMainConnectionLog);
     }
 
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(advertiserStateReceiver);
         unregisterReceiver(connectionStateReceiver);
+        unregisterReceiver(subscriptionStateReceiver);
     }
 
     private boolean isBluetoothEnabled() {
@@ -212,9 +215,9 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver advertiserStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String advertiserStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_SERVER_ADVERTISER_EXTRA);
-            if (advertiserStatus == null) return;
-            if (advertiserStatus.equals("ON")) {
+            String dataStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_SERVER_ADVERTISER_EXTRA);
+            if (dataStatus == null) return;
+            if (dataStatus.equals("ON")) {
                 advertisingActive.setChecked(true);
             } else {
                 advertisingActive.setChecked(false);
@@ -226,16 +229,32 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver connectionStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String connectionStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_SERVER_CONNECTION_EXTRA);
-            if (connectionStatus == null) return;
-            if (connectionStatus.contains("connected")) {
+            String dataStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_SERVER_CONNECTION_EXTRA);
+            if (dataStatus == null) return;
+            if (dataStatus.contains("connected")) {
                 deviceConnected.setChecked(true);
             } else {
                 deviceConnected.setChecked(false);
             }
-            String newConnectionLog = connectionStatus + "\n" + connectionLog.getText().toString();
+            String newConnectionLog = dataStatus + "\n" + connectionLog.getText().toString();
             connectionLog.setText(newConnectionLog);
         }
     };
 
+    // new in part 2
+    private final BroadcastReceiver subscriptionStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String dataStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_SERVER_SUBSCRIPTION_EXTRA);
+            if (dataStatus == null) return;
+            if (dataStatus.contains("enabled")) {
+                subscriptionsEnabled.setChecked(true);
+            } else {
+                subscriptionsEnabled.setChecked(false);
+            }
+            String newConnectionLog = dataStatus + "\n"
+                    + connectionLog.getText().toString();
+            connectionLog.setText(newConnectionLog);
+        }
+    };
 }

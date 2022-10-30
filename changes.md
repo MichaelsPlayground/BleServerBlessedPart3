@@ -1,6 +1,6 @@
 # Changes to part 1 of the server
 
-1) added 3 switches and a (Material) EditText to the activity_main.xml
+1) added 4 switches and a (Material) EditText to the activity_main.xml
 
 ```plaintext
     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -38,7 +38,19 @@
         android:clickable="false"
         android:text="Device is connected"
         android:textSize="18sp" />
-        
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/swMainSubscriptionsEnabled"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:checked="false"
+        android:clickable="false"
+        android:text="Subscriptions are enabled"
+        android:textSize="18sp" />
+                
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/etMainConnectionLogDecoration"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -69,7 +81,7 @@
     </com.google.android.material.textfield.TextInputLayout>        
 ```
 
-2) added switches and EditTextto MainActivity.java
+2) added switches and EditText to MainActivity.java
 
 for switch BluetoothEnabled:
 
@@ -274,6 +286,58 @@ on the last two lines:
             connectionLog.setText(newConnectionLog);
         }
     };
+```
+
+8) adding the code for subscriptionsEnabled:
+
+```plaintext
+    MainAcrtivity:
+    registerReceiver(subscriptionStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_SERVER_SUBSCRIPTION)));
+    unregisterReceiver(subscriptionStateReceiver);
+
+    private final BroadcastReceiver subscriptionStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String dataStatus = intent.getStringExtra(BluetoothServer.BLUETOOTH_SERVER_SUBSCRIPTION_EXTRA);
+            if (dataStatus == null) return;
+            if (dataStatus.contains("enabled")) {
+                subscriptionsEnabled.setChecked(true);
+            } else {
+                subscriptionsEnabled.setChecked(false);
+            }
+            String newConnectionLog = dataStatus + "\n" 
+                    + connectionLog.getText().toString();
+            connectionLog.setText(newConnectionLog);
+        }
+    };
+    
+    BluetoothServer:
+    public static final String BLUETOOTH_SERVER_SUBSCRIPTION = "androidcrypto.bluetoothserver.subscription";
+    public static final String BLUETOOTH_SERVER_SUBSCRIPTION_EXTRA = "androidcrypto.bluetoothserver.subscription.extra";    
+    
+        @Override
+        public void onNotifyingEnabled(@NotNull BluetoothCentral central, @NotNull BluetoothGattCharacteristic characteristic) {
+            Service serviceImplementation = serviceImplementations.get(characteristic.getService());
+            if (serviceImplementation != null) {
+                serviceImplementation.onNotifyingEnabled(central, characteristic);
+                // new in part 2
+                Intent intent = new Intent(BLUETOOTH_SERVER_SUBSCRIPTION);
+                intent.putExtra(BLUETOOTH_SERVER_SUBSCRIPTION_EXTRA, "subscription enabled for characteristic: " + characteristic.getUuid().toString());
+                sendToMain(intent);
+            }
+        }
+
+        @Override
+        public void onNotifyingDisabled(@NotNull BluetoothCentral central, @NotNull BluetoothGattCharacteristic characteristic) {
+            Service serviceImplementation = serviceImplementations.get(characteristic.getService());
+            if (serviceImplementation != null) {
+                serviceImplementation.onNotifyingDisabled(central, characteristic);
+                // new in part 2
+                Intent intent = new Intent(BLUETOOTH_SERVER_SUBSCRIPTION);
+                intent.putExtra(BLUETOOTH_SERVER_SUBSCRIPTION_EXTRA, "subscription disabled for characteristic: " + characteristic.getUuid().toString());
+                sendToMain(intent);
+            }
+        }
 ```
 
 Now the MainActivity is showing the BluetoothEnabled, AdvertisingActive and DeviceConnect status and 

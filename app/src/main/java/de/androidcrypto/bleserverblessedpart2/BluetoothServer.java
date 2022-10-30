@@ -43,6 +43,8 @@ class BluetoothServer {
     public static final String BLUETOOTH_SERVER_ADVERTISER_EXTRA = "androidcrypto.bluetoothserver.advertiser.extra";
     public static final String BLUETOOTH_SERVER_CONNECTION = "androidcrypto.bluetoothserver.connection";
     public static final String BLUETOOTH_SERVER_CONNECTION_EXTRA = "androidcrypto.bluetoothserver.connection.extra";
+    public static final String BLUETOOTH_SERVER_SUBSCRIPTION = "androidcrypto.bluetoothserver.subscription";
+    public static final String BLUETOOTH_SERVER_SUBSCRIPTION_EXTRA = "androidcrypto.bluetoothserver.subscription.extra";
 
     public static synchronized BluetoothServer getInstance(Context context) {
         mContext = context; // new in part 2
@@ -113,6 +115,10 @@ class BluetoothServer {
             Service serviceImplementation = serviceImplementations.get(characteristic.getService());
             if (serviceImplementation != null) {
                 serviceImplementation.onNotifyingEnabled(central, characteristic);
+                // new in part 2
+                Intent intent = new Intent(BLUETOOTH_SERVER_SUBSCRIPTION);
+                intent.putExtra(BLUETOOTH_SERVER_SUBSCRIPTION_EXTRA, "subscription enabled for characteristic: " + characteristic.getUuid().toString());
+                sendToMain(intent);
             }
         }
 
@@ -121,6 +127,10 @@ class BluetoothServer {
             Service serviceImplementation = serviceImplementations.get(characteristic.getService());
             if (serviceImplementation != null) {
                 serviceImplementation.onNotifyingDisabled(central, characteristic);
+                // new in part 2
+                Intent intent = new Intent(BLUETOOTH_SERVER_SUBSCRIPTION);
+                intent.putExtra(BLUETOOTH_SERVER_SUBSCRIPTION_EXTRA, "subscription disabled for characteristic: " + characteristic.getUuid().toString());
+                sendToMain(intent);
             }
         }
 

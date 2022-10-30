@@ -53,6 +53,18 @@
         android:text="Device is connected"
         android:textSize="18sp" />
 
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/swMainSubscriptionsEnabled"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:checked="false"
+        android:clickable="false"
+        android:text="Subscriptions are enabled"
+        android:textSize="18sp" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/etMainConnectionLogDecoration"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
