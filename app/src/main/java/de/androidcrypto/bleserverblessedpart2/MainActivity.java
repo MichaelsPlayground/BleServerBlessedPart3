@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean isBluetoothEnabled() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(bluetoothAdapter == null) return false;
-
         return bluetoothAdapter.isEnabled();
     }
 

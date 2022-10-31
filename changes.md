@@ -151,7 +151,7 @@ and append a sendToMain method:
 }
 ```
 
-as the sendToMain method needs a context we have store the conext provided on 
+as the sendToMain method needs a context we have store the context provided on 
 BluetoothServer getInstance in a class variable:
 
 ```plaintext
