@@ -13,5 +13,5 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
     }
 }
-rootProject.name = "BleServerBlessedPart2"
+rootProject.name = "BleServerBlessedPart3"
 include ':app'
