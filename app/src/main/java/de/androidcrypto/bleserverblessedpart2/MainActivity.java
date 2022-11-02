@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.WindowManager;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
@@ -56,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
         deviceConnected = findViewById(R.id.swMainDeviceConnected);
         subscriptionsEnabled = findViewById(R.id.swMainSubscriptionsEnabled);
         connectionLog = findViewById(R.id.etMainConnectionLog);
+
+        // this is for debug purposes - it leaves the screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @SuppressLint("MissingPermission")

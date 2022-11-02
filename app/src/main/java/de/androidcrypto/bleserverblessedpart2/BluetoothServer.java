@@ -159,6 +159,7 @@ class BluetoothServer {
                 serviceImplementation.onCentralDisconnected(central);
             }
             // new in part 2
+            // send to UI
             Intent intent = new Intent(BLUETOOTH_SERVER_CONNECTION);
             intent.putExtra(BLUETOOTH_SERVER_CONNECTION_EXTRA, "DISCONNECTED from MAC: " + central.getAddress());
             sendToMain(intent);
@@ -166,7 +167,6 @@ class BluetoothServer {
 
         @Override
         public void onAdvertisingStarted(@NotNull AdvertiseSettings settingsInEffect) {
-            System.out.println("*** onAdvertisingStarted ***");
             // new in part 2
             Intent intent = new Intent(BLUETOOTH_SERVER_ADVERTISER);
             intent.putExtra(BLUETOOTH_SERVER_ADVERTISER_EXTRA, "ON");

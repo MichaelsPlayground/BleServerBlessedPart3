@@ -65,7 +65,6 @@ For security reasons the address the server can get connected is changing very o
 like the nRF Connect-app it is often necessary to (re)run a scan AND choose the newest entry (mostly the most 
 bottom down one).**
 
-
 Some technical details on this app:
 ```plaintext
 minimum SDK is 21
