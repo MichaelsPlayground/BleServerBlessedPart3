@@ -240,6 +240,11 @@ class BluetoothServer {
         DeviceInformationService deviceInformationService = new DeviceInformationService(peripheralManager);
         CurrentTimeService currentTimeService = new CurrentTimeService(peripheralManager);
         HeartRateService heartRateService = new HeartRateService(peripheralManager);
+        // new in part 3
+        BatteryService batteryService = new BatteryService(peripheralManager);
+        // new in part 3
+        serviceImplementations.put(batteryService.getService(), batteryService);
+
         serviceImplementations.put(deviceInformationService.getService(), deviceInformationService);
         serviceImplementations.put(currentTimeService.getService(), currentTimeService);
         serviceImplementations.put(heartRateService.getService(), heartRateService);
