@@ -1,5 +1,7 @@
 package de.androidcrypto.bleserverblessedpart3;
 
+import static com.welie.blessed.BluetoothBytesParser.FORMAT_UINT8;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -16,6 +18,7 @@ import android.os.ParcelUuid;
 import androidx.annotation.NonNull;
 
 import com.welie.blessed.AdvertiseError;
+import com.welie.blessed.BluetoothBytesParser;
 import com.welie.blessed.BluetoothCentral;
 import com.welie.blessed.BluetoothPeripheralManager;
 import com.welie.blessed.BluetoothPeripheralManagerCallback;
@@ -240,17 +243,17 @@ class BluetoothServer {
         DeviceInformationService deviceInformationService = new DeviceInformationService(peripheralManager);
         CurrentTimeService currentTimeService = new CurrentTimeService(peripheralManager);
         HeartRateService heartRateService = new HeartRateService(peripheralManager);
-        // new in part 3
-        BatteryService batteryService = new BatteryService(peripheralManager);
-        // new in part 3
-        serviceImplementations.put(batteryService.getService(), batteryService);
-
         serviceImplementations.put(deviceInformationService.getService(), deviceInformationService);
         serviceImplementations.put(currentTimeService.getService(), currentTimeService);
         serviceImplementations.put(heartRateService.getService(), heartRateService);
 
+        // new in part 3
+        BatteryService batteryService = new BatteryService(peripheralManager, mContext);
+        serviceImplementations.put(batteryService.getService(), batteryService);
+
         setupServices();
         startAdvertising(heartRateService.getService().getUuid());
+
     }
 
     /**

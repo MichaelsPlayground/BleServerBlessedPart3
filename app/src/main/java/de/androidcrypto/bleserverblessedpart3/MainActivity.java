@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     /* Local UI */
     SwitchMaterial bluetoothEnabled, advertisingActive, deviceConnected, subscriptionsEnabled;
     com.google.android.material.textfield.TextInputEditText connectionLog;
+    // new in part 3
+    com.google.android.material.textfield.TextInputEditText batteryLevel;
 
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int ACCESS_LOCATION_REQUEST = 2;
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(advertiserStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_SERVER_ADVERTISER)));
         registerReceiver(connectionStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_SERVER_CONNECTION)));
         registerReceiver(subscriptionStateReceiver, new IntentFilter((BluetoothServer.BLUETOOTH_SERVER_SUBSCRIPTION)));
+        // new in part 3
+        registerReceiver(batteryLevelStateReceiver, new IntentFilter((BatteryService.BLUETOOTH_SERVER_BATTERY_LEVEL)));
 
         // new in part 2
         bluetoothEnabled = findViewById(R.id.swMainBleEnabled);
@@ -57,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         deviceConnected = findViewById(R.id.swMainDeviceConnected);
         subscriptionsEnabled = findViewById(R.id.swMainSubscriptionsEnabled);
         connectionLog = findViewById(R.id.etMainConnectionLog);
+        // new in part 3
+        batteryLevel = findViewById(R.id.etMainBatteryLevel);
 
         // this is for debug purposes - it leaves the screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -84,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(advertiserStateReceiver);
         unregisterReceiver(connectionStateReceiver);
         unregisterReceiver(subscriptionStateReceiver);
+        // new in part 3
+        unregisterReceiver(batteryLevelStateReceiver);
     }
 
     private boolean isBluetoothEnabled() {
@@ -258,6 +266,18 @@ public class MainActivity extends AppCompatActivity {
             String newConnectionLog = dataStatus + "\n"
                     + connectionLog.getText().toString();
             connectionLog.setText(newConnectionLog);
+        }
+    };
+
+    // new in part 3
+    private final BroadcastReceiver batteryLevelStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String dataStatus = intent.getStringExtra(BatteryService.BLUETOOTH_SERVER_BATTERY_LEVEL_EXTRA);
+            if (dataStatus == null) return;
+            String resultString = "The remaining battery level is " +
+                    dataStatus + " %";
+            batteryLevel.setText(resultString);
         }
     };
 }
