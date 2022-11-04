@@ -7,7 +7,7 @@ To create a "new" service it is a good idea to check if a service and its UUID i
 Go to "Battery Service" and download the Battery Service 1.0.pdf document:
 
 https://www.bluetooth.org/docman/handlers/downloaddoc.ashx?doc_id=245138
-
+ 
 BAS_SPEC_V10.pdf
 
 2) Now we knew that the Battery Service is a official service we need the UUIDs for the service and the characteristic(s).
