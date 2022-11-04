@@ -26,9 +26,9 @@ import java.util.UUID;
 
 import timber.log.Timber;
 
+// complete class new in part 3
 class BatteryService extends BaseService {
 
-    // new in part 3
     public static final String BLUETOOTH_SERVER_BATTERY_LEVEL = "androidcrypto.bluetoothserver.batterylevel";
     public static final String BLUETOOTH_SERVER_BATTERY_LEVEL_EXTRA = "androidcrypto.bluetoothserver.batterylevel.extra";
     Context mContext;
@@ -85,7 +85,6 @@ class BatteryService extends BaseService {
 
     private void notifyBatteryLevel() {
         currentBL += (int) - 1;
-
         final byte[] value = new byte[]{(byte) ((byte) currentBL & 0xFF)};
         notifyCharacteristicChanged(value, characteristic);
         sendBatteryLevelToUi(value);
@@ -95,7 +94,6 @@ class BatteryService extends BaseService {
         } else {
             handler.postDelayed(notifyRunnable, 1000);
         }
-
         Timber.i("new BL: %d", currentBL);
     }
 
