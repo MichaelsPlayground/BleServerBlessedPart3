@@ -30,7 +30,7 @@ If you search for "battery_service.xml" the first link I found refers to
 
 https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.service.battery_service.xml
 
-Unfortunately the "official" and maybe updated version of the specification is available for bluetooth.com 
+Unfortunately the "official" and maybe outdated version of the specification is available for bluetooth.com 
 for members only but there is a GitHub-repo that provides (older / outdated ? ) versions.
 
 ```plaintext
