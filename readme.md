@@ -1,7 +1,15 @@
-# Bluetooth Low Energy Server with BLESSED-ANDROID library (part 2)
+# Bluetooth Low Energy Server with BLESSED-ANDROID library (part 3)
 
-This is part 2 of the BLE server (peripheral) example using the code in 
+This is part 3 of the BLE server (peripheral) example using the code in 
 https://github.com/weliem/bluetooth-server-example.
+
+Recent server and client apps:
+
+The code for the server from part 2 is available here: https://github.com/AndroidCrypto/BleServerBlessedPart2 
+and a description is here: https://medium.com/@androidcrypto/enhance-your-own-android-bluetooth-low-energy-server-part-2-980cac9f910f.
+
+The companion code for the client from part 2 is here: https://github.com/AndroidCrypto/BleClientBlessedPart2 
+and a description is here: https://medium.com/@androidcrypto/enhance-a-android-bluetooth-low-energy-client-part-2-200aab7255de
 
 The code for the server from part 1 is available here: https://github.com/AndroidCrypto/BleServerBlessedOriginal 
 and a description is here: https://medium.com/@androidcrypto/setup-your-own-android-bluetooth-low-energy-server-part-1-dbf8dadd75b5.
